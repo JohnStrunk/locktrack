@@ -1,11 +1,13 @@
 #include "locktrack.h"
 
+#include <assert.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
 lt_mutex_t mutex;
+unsigned long shared_var = 0ul;
 
 void *
 worker(void *arg_iter)
@@ -15,6 +17,7 @@ worker(void *arg_iter)
 
         while (iters--) {
                 lt_mutex_lock(&mutex);
+                ++shared_var;
                 lt_mutex_unlock(&mutex);
         }
 
@@ -70,6 +73,8 @@ main(int argc, char *argv[])
                mutex.uncontended);
 
         lt_mutex_destroy(&mutex);
+
+        assert(shared_var == iters * threads);
 
         return 0;
 }

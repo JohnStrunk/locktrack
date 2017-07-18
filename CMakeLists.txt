@@ -1,32 +1,28 @@
+cmake_minimum_required(VERSION 3.8)
+
 project(locktrack)
 set(LOCKTRACK_VERSION "0.5")
 
-cmake_minimum_required(VERSION 3.8)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING
+  "Choose the type of build, options are: Debug Release RelWithDebInfo MinSizeRel."
+  FORCE)
+  message(STATUS "Build type not specified. Setting to: ${CMAKE_BUILD_TYPE}")
+endif(NOT CMAKE_BUILD_TYPE)
 
-if(DEFINED CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING
-    "The type of build: Debug, Optimized")
-else()
-  set(CMAKE_BUILD_TYPE Debug CACHE STRING
-    "The type of build: Debug, Optimized")
-endif()
+set(CMAKE_C_FLAGS "-Wall")
+set(CMAKE_C_FLAGS_DEBUG "-Werror -g3 -O2 -DDEBUG")
+set(CMAKE_C_FLAGS_RELEASE "-g -O3")
 
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
-  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in
-    ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-    @ONLY
-  )
+  configure_file(Doxyfile.in Doxyfile @ONLY)
   add_custom_target(doc
     ALL
-    COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   )
 endif()
-
-set(CMAKE_C_FLAGS "-Wall ${CONFIG_DEFINES}")
-set(CMAKE_C_FLAGS_DEBUG "-Werror -ansi -g3 -O2 -DDEBUG")
-set(CMAKE_C_FLAGS_OPTIMIZED "-g -O3")
 
 include_directories(liblocktrack)
 
